@@ -1,6 +1,10 @@
 ---
 title: "NOAA Storm Database Analysis"
-output: html_document
+author: "André Marinho"
+date: "25/07/2020"
+output: 
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
@@ -47,29 +51,29 @@ unique(data$PROPDMGEXP)
 ```
 
 Step 7 (records like "+", "-", "?" were treated like 0)
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(dplyr)
 data <- data %>%
         mutate(PROPDMG = PROPDMG * case_when(
-               PROPDMGEXP == "H" ~ 1e+02,
-               PROPDMGEXP == "h" ~ 1e+02,
-               PROPDMGEXP == "K" ~ 1e+03,
-               PROPDMGEXP == "M" ~ 1e+06,
-               PROPDMGEXP == "m" ~ 1e+06,
-               PROPDMGEXP == "B" ~ 1e+09,
-               PROPDMGEXP == "0" ~ 1,
-               PROPDMGEXP == "1" ~ 10,
-               PROPDMGEXP == "2" ~ 1e+02,
-               PROPDMGEXP == "3" ~ 1e+03,
-               PROPDMGEXP == "4" ~ 1e+04,
-               PROPDMGEXP == "5" ~ 1e+05,
-               PROPDMGEXP == "6" ~ 1e+06,
-               PROPDMGEXP == "7" ~ 1e+07,
-               PROPDMGEXP == "8" ~ 1e+08,
-               PROPDMGEXP == "" ~ 1,
-               PROPDMGEXP == "+" ~ 0,
-               PROPDMGEXP == "-" ~ 0,
-               PROPDMGEXP == "?" ~ 0
+                PROPDMGEXP == "H" ~ 1e+02,
+                PROPDMGEXP == "h" ~ 1e+02,
+                PROPDMGEXP == "K" ~ 1e+03,
+                PROPDMGEXP == "M" ~ 1e+06,
+                PROPDMGEXP == "m" ~ 1e+06,
+                PROPDMGEXP == "B" ~ 1e+09,
+                PROPDMGEXP == "0" ~ 1,
+                PROPDMGEXP == "1" ~ 10,
+                PROPDMGEXP == "2" ~ 1e+02,
+                PROPDMGEXP == "3" ~ 1e+03,
+                PROPDMGEXP == "4" ~ 1e+04,
+                PROPDMGEXP == "5" ~ 1e+05,
+                PROPDMGEXP == "6" ~ 1e+06,
+                PROPDMGEXP == "7" ~ 1e+07,
+                PROPDMGEXP == "8" ~ 1e+08,
+                PROPDMGEXP == "" ~ 1,
+                PROPDMGEXP == "+" ~ 0,
+                PROPDMGEXP == "-" ~ 0,
+                PROPDMGEXP == "?" ~ 0
         ), PROPDMGEXP=NULL
         )
 ```
@@ -123,30 +127,26 @@ population_issues_top10 <- cbind(
 print(population_issues_top10)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # 3.2. Plot top 10 health issues
-#fatalities_top10 <- fatalities_top10[order(fatalities_top10$FATALITIES), ][1:10,]
-#par(mfrow=c(1,2), mar=c(10,3,3,2))
-#barplot(fatalities_top10$FATALITIES,
-        #names.arg=fatalities_top10$EVTYPE,
-        #col="red",
-        #ylab="FATALITIES",
-       # main="TOP 10 fatalities", 
-      #  las=2)
-#barplot(injuries_top10$INJURIES,
- #       names.arg=injuries_top10$EVTYPE,
-  #      col="red",
-   #     ylab="INJURIES",
-    #    main="TOP 10 injuries", 
-     #   las=2)
-
 library(ggplot2)
-fat_top10_plot <- population_issues_top10[1:10,1:2]
 
-ggplot(fat_top10_plot, aes(EVTYPE, FATALITIES)) +
-        geom_bar(position="dodge",
-                 stat="identity") +
-        theme(axis.text.x=element_text(angle=90, hjust=1))
+fat_top10_plot <- head(population_issues_top10[1:10,1:2], 10)
+inj_top10_plot <- head(population_issues_top10[1:10,3:4], 10)
+
+par(mfrow=c(1,2),mar=c(10,4,3,2))
+barplot(fat_top10_plot$FATALITIES,
+        names.arg=fat_top10_plot$EVTYPE,
+        las=3,
+        ylab="# OF FATALITIES",
+        col="red",
+        main="TOP 10 FATALITIES")
+barplot(inj_top10_plot$INJURIES,
+        names.arg=inj_top10_plot$EVTYPE,
+        las=3,
+        ylab="# OF INJURIES",
+        col="red",
+        main="TOP 10 INJURIES")
 ```
 
 
@@ -169,6 +169,21 @@ print(economic_issues_top10)
 ```
 
 ```{r}
-# 3.4. 
-#TODO: plotagem
+# 3.4. Plot top 10 economic issues
+prop_top10_plot <- head(economic_issues_top10[1:10,1:2], 10)
+crop_top10_plot <- head(economic_issues_top10[1:10,3:4], 10)
+
+par(mfrow=c(1,2),mar=c(12,4,3,2))
+barplot(prop_top10_plot$PROPDMG/(1e+09),
+        names.arg=prop_top10_plot$EVTYPE,
+        las=3,
+        ylab="(IN BILLIONS)",
+        col="yellow",
+        main="TOP 10 PROPERTY DAMAGES")
+barplot(crop_top10_plot$CROPDMG/(1e+09),
+        names.arg=crop_top10_plot$EVTYPE,
+        las=3,
+        ylab="(IN BILLIONS)",
+        col="yellow",
+        main="TOP 10 CROP DAMAGES")
 ```
