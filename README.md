@@ -1,1 +1,1 @@
-# Coursera-Reproducible-Research-FinalProject
+# Coursera Reproducible Research FinalProject
